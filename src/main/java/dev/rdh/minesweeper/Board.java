@@ -82,7 +82,7 @@ public class Board {
 
 	@Override
 	public String toString() {
-		if(safeSquaresOpened == width * height - difficulty.getNumMines()) {
+		if(safeSquaresOpened >= width * height - difficulty.getNumMines()) {
 			won = true;
 		}
 
@@ -129,6 +129,10 @@ public class Board {
 	}
 
 	public void reveal() {
+		reveal(x, y);
+	}
+
+	private void reveal(int x, int y) {
 		Cell cell = cells[x][y];
 		if(cell.isFlagged()) return;
 
@@ -152,10 +156,10 @@ public class Board {
 
 		if(cell.getAdjacentMines() <= 0) {
 			floodReveal(x, y);
+		} else {
+			cell.reveal();
+			safeSquaresOpened++;
 		}
-
-		cell.reveal();
-		safeSquaresOpened++;
 	}
 
 	private void floodReveal(int x, int y) {
@@ -179,6 +183,38 @@ public class Board {
 		for(int x1 = x - 1; x1 <= x + 1; x1++) {
 			for(int y1 = y - 1; y1 <= y + 1; y1++) {
 				floodReveal(x1, y1);
+			}
+		}
+	}
+
+	public void chord() {
+		Cell cell = cells[x][y];
+		if(!cell.isRevealed()) return;
+
+		int adjacentFlags = 0;
+		for(int x1 = x - 1; x1 <= x + 1; x1++) {
+			for(int y1 = y - 1; y1 <= y + 1; y1++) {
+				if(x1 < 0 || x1 >= width || y1 < 0 || y1 >= height) {
+					continue;
+				}
+
+				if(cells[x1][y1].isFlagged()) {
+					adjacentFlags++;
+				}
+			}
+		}
+
+		if(adjacentFlags != cell.getAdjacentMines()) return;
+
+		for(int x1 = x - 1; x1 <= x + 1; x1++) {
+			for(int y1 = y - 1; y1 <= y + 1; y1++) {
+				if(x1 < 0 || x1 >= width || y1 < 0 || y1 >= height) {
+					continue;
+				}
+
+				if(!cells[x1][y1].isFlagged()) {
+					reveal(x1, y1);
+				}
 			}
 		}
 	}

@@ -31,6 +31,7 @@ public class Game {
 				case 'f' -> board.flag();
 				case ' ' -> board.reveal();
 				case 'w', 'a', 's', 'd' -> board.handleMovement(c);
+				case 'c' -> board.chord();
 				case '\033' -> {
 					if(console.readChar() == '[') {
 						board.handleMovement(console.readChar());
