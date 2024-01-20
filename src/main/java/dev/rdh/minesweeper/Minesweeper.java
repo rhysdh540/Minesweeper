@@ -2,6 +2,11 @@ package dev.rdh.minesweeper;
 
 public class Minesweeper {
 	public static void main(String[] args) {
+		if(System.getProperty("os.name").toLowerCase().contains("wind")) {
+			System.err.println("This game is not supported on Windows!");
+			return;
+		}
+
 		try(Console console = new Console()) {
 			console.echo(false);
 			console.clearScreen();
