@@ -1,3 +1,5 @@
+import java.util.*
+
 plugins {
     java
 }
@@ -8,6 +10,8 @@ version = "0.1"
 repositories {
     mavenCentral()
 }
+
+base.archivesName = project.name.lowercase(Locale.getDefault())
 
 dependencies {
     implementation("com.google.code.findbugs:jsr305:3.0.2")

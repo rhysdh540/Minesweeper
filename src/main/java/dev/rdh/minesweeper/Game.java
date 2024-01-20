@@ -4,12 +4,14 @@ public class Game {
 	private final Console console;
 
 	private final Board board;
+	private Config config;
 
 	private boolean running = true;
 
 	public Game(Console console, Difficulty difficulty) {
 		this.console = console;
 		this.board = new Board(difficulty);
+		this.config = Config.load();
 	}
 
 	public void run() {
@@ -25,17 +27,21 @@ public class Game {
 			}
 
 			char c = console.readChar();
-			switch(c) {
-				case 'q' -> running = false;
-				case 'r' -> board.regenerate();
-				case 'f' -> board.flag();
-				case ' ' -> board.reveal();
-				case 'w', 'a', 's', 'd' -> board.handleMovement(c);
-				case 'c' -> board.chord();
-				case '\033' -> {
-					if(console.readChar() == '[') {
-						board.handleMovement(console.readChar());
-					}
+			if(c == 'q') {
+				running = false;
+			} else if(c == config.reset) {
+				board.regenerate();
+			} else if(c == config.flag) {
+				board.flag();
+			} else if(c == config.reveal) {
+				board.reveal();
+			} else if("wasd".indexOf(c) >= 0 && config.useWASD) {
+				board.handleMovement(c);
+			} else if(c == config.chord) {
+				board.chord();
+			} else if(c == '\033') {
+				if(console.readChar() == '[') {
+					board.handleMovement(console.readChar());
 				}
 			}
 		}
