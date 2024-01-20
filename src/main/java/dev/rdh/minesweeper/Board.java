@@ -102,17 +102,18 @@ public class Board {
 	}
 
 	public void handleMovement(char move) {
+		if(isGameOver()) return;
 		switch(move) {
-			case 'A' -> {
+			case 'A', 'w' -> {
 				if(y > 0) y--;
 			}
-			case 'B' -> {
+			case 'B', 's' -> {
 				if(y < height - 1) y++;
 			}
-			case 'C' -> {
+			case 'C', 'd' -> {
 				if(x < width - 1) x++;
 			}
-			case 'D' -> {
+			case 'D', 'a' -> {
 				if(x > 0) x--;
 			}
 		}
@@ -189,6 +190,9 @@ public class Board {
 
 		for(int x = 0; x < width; x++) {
 			for(int y = 0; y < height; y++) {
+				if(cells[x][y].isFlagged() && !cells[x][y].isMine()) {
+					cells[x][y].flag();
+				}
 				cells[x][y].reveal();
 			}
 		}

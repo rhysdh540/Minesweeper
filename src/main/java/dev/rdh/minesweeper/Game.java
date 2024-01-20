@@ -24,11 +24,13 @@ public class Game {
 				return;
 			}
 
-			switch(console.readChar()) {
+			char c = console.readChar();
+			switch(c) {
 				case 'q' -> running = false;
 				case 'r' -> board.regenerate();
 				case 'f' -> board.flag();
 				case ' ' -> board.reveal();
+				case 'w', 'a', 's', 'd' -> board.handleMovement(c);
 				case '\033' -> {
 					if(console.readChar() == '[') {
 						board.handleMovement(console.readChar());
