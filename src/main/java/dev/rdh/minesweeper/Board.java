@@ -12,22 +12,27 @@ public class Board {
 
 	private final Cell[][] cells;
 
-	@Getter
-	private final Difficulty difficulty;
+	private final int numMines;
+	private int numFlags = 0;
 
 	@Getter
 	private boolean lost, won;
+
+	@Getter
+	private final String diffName;
 
 	private int safeSquaresOpened = 0;
 
 	private boolean firstRevealed = false;
 
-	public Board(Difficulty difficulty) {
-		this.width = difficulty.getWidth();
-		this.height = difficulty.getHeight();
-		this.difficulty = difficulty;
-		this.cells = new Cell[width][height];
+	private long startTime;
 
+	public Board(int width, int height, int numMines, String diffName) {
+		this.width = width;
+		this.height = height;
+		this.cells = new Cell[width][height];
+		this.numMines = numMines;
+		this.diffName = diffName;
 		reset();
 		x = width / 2;
 		y = height / 2;
@@ -48,8 +53,7 @@ public class Board {
 	public void regenerate() {
 		reset();
 		ThreadLocalRandom random = ThreadLocalRandom.current();
-		int mines = difficulty.getNumMines();
-		for(int i = 0; i < mines; i++) {
+		for(int i = 0; i < numMines; i++) {
 			int x = random.nextInt(width);
 			int y = random.nextInt(height);
 			if(cells[x][y].isMine()) {
@@ -82,12 +86,12 @@ public class Board {
 
 	@Override
 	public String toString() {
-		if(safeSquaresOpened >= width * height - difficulty.getNumMines()) {
+		if(safeSquaresOpened >= width * height - numMines) {
 			won = true;
 		}
 
 		StringBuilder sb = new StringBuilder();
-		sb.append("Minesweeper (").append(difficulty).append("):\n");
+		sb.append("Minesweeper (").append(diffName).append(") - ").append(numMines - numFlags).append(" mines left:\n");
 		for(int y = 0; y < height; y++) {
 			for(int x = 0; x < width; x++) {
 				boolean isSelection = this.x == x && this.y == y && !isGameOver();
@@ -125,7 +129,18 @@ public class Board {
 
 	private boolean shouldFloodReveal() {
 		Cell cell = cells[x][y];
-		return !cell.isRevealed() && !cell.isMine() && cell.getAdjacentMines() <= 0;
+		return !cell.isRevealed() && !cell.isMine()
+				&& (cell.getAdjacentMines() <= 0 || diffName.equals("Custom"));
+	}
+
+	private void start() {
+		startTime = System.currentTimeMillis();
+		firstRevealed = true;
+		do {
+			// guarantees that the first time user reveals it will flood
+			regenerate();
+		} while(!shouldFloodReveal());
+		floodReveal(x, y);
 	}
 
 	public void reveal() {
@@ -137,12 +152,7 @@ public class Board {
 		if(cell.isFlagged()) return;
 
 		if(!firstRevealed) {
-			firstRevealed = true;
-			do {
-				// guarantees that the first time user reveals it will flood
-				regenerate();
-			} while(!shouldFloodReveal());
-			floodReveal(x, y);
+			start();
 			return;
 		}
 
@@ -239,5 +249,10 @@ public class Board {
 		if(cell.isRevealed()) return;
 
 		cell.flag();
+		if(cell.isFlagged()) {
+			numFlags++;
+		} else {
+			numFlags--;
+		}
 	}
 }

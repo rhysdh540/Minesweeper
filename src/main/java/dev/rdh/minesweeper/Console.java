@@ -10,7 +10,8 @@ import java.io.PrintStream;
 import java.io.UncheckedIOException;
 
 public class Console implements AutoCloseable {
-	private static final int DEFAULT_TERMINAL_WIDTH = 80;
+	public static final int DEFAULT_TERMINAL_WIDTH = 80;
+	public static final int DEFAULT_TERMINAL_HEIGHT = 25;
 
 	private final String originalStty;
 
@@ -204,6 +205,29 @@ public class Console implements AutoCloseable {
 			return out.toString();
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
+		}
+	}
+
+	public int readInt(String prompt) {
+		return readInt(prompt, Integer.MIN_VALUE, Integer.MAX_VALUE);
+	}
+
+	public int readInt(String prompt, int min, int max) {
+		while(true) {
+			clearScreen();
+			print(prompt);
+			try {
+				int i = Integer.parseInt(readLine());
+				if(i < min || i > max) {
+					hideCursor();
+					print("\nNumber must be between " + min + " and " + max + "!");
+					waitForEnter();
+				} else return i;
+			} catch(NumberFormatException e) {
+				hideCursor();
+				print("\nInvalid number!");
+				waitForEnter();
+			}
 		}
 	}
 }

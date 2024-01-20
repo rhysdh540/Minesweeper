@@ -1,5 +1,3 @@
-import java.util.*
-
 plugins {
     java
 }
@@ -11,7 +9,7 @@ repositories {
     mavenCentral()
 }
 
-base.archivesName = project.name.lowercase(Locale.getDefault())
+base.archivesName = project.name.lowercase()
 
 dependencies {
     implementation("com.google.code.findbugs:jsr305:3.0.2")

@@ -19,8 +19,10 @@ public class Minesweeper {
 			while(true) {
 				int mainSelection = main.displayOn(console);
 				if(mainSelection == 2) {
+					console.clearScreen();
 					break;
-				} else if(mainSelection == 1) {
+				}
+				if(mainSelection == 1) {
 					configureControls(console);
 					continue;
 				}
@@ -38,7 +40,9 @@ public class Minesweeper {
 		Config config = Config.load();
 		while(true) {
 			SelectionModal controls = SelectionModal.of("Choose a control to change:",
-					"Use WASD: " + (config.useWASD ? "Yes" : "No"), "Chord: " + key(config.chord), "Flag: " + key(config.flag), "Reveal: " + key(config.reveal), "Reset: " + key(config.reset), "Reset Controls to Defaults", "Back");
+					"Use WASD: " + (config.useWASD ? "Yes" : "No"), "Chord: " + key(config.chord),
+					"Flag: " + key(config.flag), "Reveal: " + key(config.reveal), "Reset: " + key(config.reset),
+					"Reset Controls to Defaults", "Back");
 			int selection = controls.displayOn(console);
 			if(selection == 5) {
 				config = new Config();

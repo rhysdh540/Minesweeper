@@ -4,13 +4,24 @@ public class Game {
 	private final Console console;
 
 	private final Board board;
-	private Config config;
+	private final Config config;
 
 	private boolean running = true;
 
 	public Game(Console console, Difficulty difficulty) {
 		this.console = console;
-		this.board = new Board(difficulty);
+
+		int width = difficulty.getWidth();
+		int height = difficulty.getHeight();
+		int numMines = difficulty.getNumMines();
+
+		if(difficulty == Difficulty.CUSTOM) {
+			width = console.readInt("Enter a width: ", 1, Console.DEFAULT_TERMINAL_WIDTH / 2);
+			height = console.readInt("Enter a height: ", 1, Console.DEFAULT_TERMINAL_HEIGHT - 2);
+			numMines = console.readInt("Enter a number of mines: ", 0, width * height - 1);
+		}
+
+		this.board = new Board(width, height, numMines, difficulty.toString());
 		this.config = Config.load();
 	}
 
