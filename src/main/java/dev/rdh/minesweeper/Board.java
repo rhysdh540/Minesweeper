@@ -25,6 +25,7 @@ public class Board {
 
 	private boolean firstRevealed = false;
 
+	@Getter
 	private long startTime;
 
 	public Board(int width, int height, int numMines, String diffName) {
@@ -86,12 +87,12 @@ public class Board {
 
 	@Override
 	public String toString() {
-		if(safeSquaresOpened >= width * height - numMines) {
+		if(safeSquaresOpened == width * height - numMines) {
 			won = true;
 		}
 
 		StringBuilder sb = new StringBuilder();
-		sb.append("Minesweeper (").append(diffName).append(") - ").append(numMines - numFlags).append(" mines left:\n");
+		sb.append("Minesweeper (").append(diffName).append(") - ").append(numMines - numFlags).append(" mines left:     \n");
 		for(int y = 0; y < height; y++) {
 			for(int x = 0; x < width; x++) {
 				boolean isSelection = this.x == x && this.y == y && !isGameOver();
@@ -137,7 +138,7 @@ public class Board {
 		startTime = System.currentTimeMillis();
 		firstRevealed = true;
 		do {
-			// guarantees that the first time user reveals it will flood
+			// guarantees that the first time user reveals it will flood unless custom difficulty
 			regenerate();
 		} while(!shouldFloodReveal());
 		floodReveal(x, y);

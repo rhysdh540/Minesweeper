@@ -39,35 +39,43 @@ public class Minesweeper {
 
 		Config config = Config.load();
 		while(true) {
-			SelectionModal controls = SelectionModal.of("Choose a control to change:",
+			SelectionModal controls = SelectionModal.of("Choose an option to change:",
 					"Use WASD: " + (config.useWASD ? "Yes" : "No"), "Chord: " + key(config.chord),
 					"Flag: " + key(config.flag), "Reveal: " + key(config.reveal), "Reset: " + key(config.reset),
+					"Change Custom Difficulty",
 					"Reset Controls to Defaults", "Back");
 			int selection = controls.displayOn(console);
-			if(selection == 5) {
-				config = new Config();
-			} else if(selection == 6) {
-				break;
-			}
 
-			if(selection == 0) {
-				config.useWASD = !config.useWASD;
-			} else if(selection == 1) {
-				console.print("Enter a new chord key: _");
-				config.chord = console.readChar();
-			} else if(selection == 2) {
-				console.print("Enter a new flag key: _");
-				config.flag = console.readChar();
-			} else if(selection == 3) {
-				console.print("Enter a new reveal key: _");
-				config.reveal = console.readChar();
-			} else if(selection == 4) {
-				console.print("Enter a new reset key: _");
-				config.reset = console.readChar();
+			switch(selection) {
+				case 0 -> config.useWASD = !config.useWASD;
+				case 1 -> {
+					console.print("Enter a new chord key: _");
+					config.chord = console.readChar();
+				}
+				case 2 -> {
+					console.print("Enter a new flag key: _");
+					config.flag = console.readChar();
+				}
+				case 3 -> {
+					console.print("Enter a new reveal key: _");
+					config.reveal = console.readChar();
+				}
+				case 4 -> {
+					console.print("Enter a new reset key: _");
+					config.reset = console.readChar();
+				}
+				case 5 -> {
+					config.width = console.readInt("Enter a width: ", 1, Console.DEFAULT_TERMINAL_WIDTH / 2);
+					config.height = console.readInt("Enter a height: ", 1, Console.DEFAULT_TERMINAL_HEIGHT - 2);
+					config.mines = console.readInt("Enter a number of mines: ", 0, config.width * config.height - 1);
+				}
+				case 6 -> config = Config.defaultConfig();
+				case 7 -> {
+					config.save();
+					return;
+				}
 			}
 		}
-
-		config.save();
 	}
 
 	private static String key(char c) {

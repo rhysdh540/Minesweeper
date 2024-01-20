@@ -14,15 +14,15 @@ public class Game {
 		int width = difficulty.getWidth();
 		int height = difficulty.getHeight();
 		int numMines = difficulty.getNumMines();
+		this.config = Config.load();
 
 		if(difficulty == Difficulty.CUSTOM) {
-			width = console.readInt("Enter a width: ", 1, Console.DEFAULT_TERMINAL_WIDTH / 2);
-			height = console.readInt("Enter a height: ", 1, Console.DEFAULT_TERMINAL_HEIGHT - 2);
-			numMines = console.readInt("Enter a number of mines: ", 0, width * height - 1);
+			width = config.width;
+			height = config.height;
+			numMines = config.mines;
 		}
 
 		this.board = new Board(width, height, numMines, difficulty.toString());
-		this.config = Config.load();
 	}
 
 	public void run() {
@@ -33,7 +33,6 @@ public class Game {
 
 			if(board.isGameOver()) {
 				showGameOverScreen();
-				console.readChar();
 				return;
 			}
 
@@ -70,5 +69,7 @@ public class Game {
 		} else {
 			throw new IllegalStateException("Game is neither lost or won, this should never happen!");
 		}
+		console.println("Time: " + ((System.currentTimeMillis() - board.getStartTime()) / 1000) + "s");
+		console.readChar();
 	}
 }
